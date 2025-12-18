@@ -1,259 +1,207 @@
-# Conference Website Backend
+# Conference Website - NCAI 2026
 
-Node.js/Express backend server for the NCAI 2026 conference website, handling payment processing, paper submissions, and email notifications.
+A modern, professional conference website for the National Conference on Artificial Intelligence (NCAI 2026) with integrated paper submission, payment processing, and repository management.
 
-## 🚀 Quick Start
+## 🎯 Features
 
-```bash
-# Install dependencies
-npm install
-
-# Configure environment
-cp .env.sample .env
-# Edit .env with your credentials
-
-# Development mode (with auto-reload)
-npm run dev
-
-# Production build
-npm run build
-npm start
-```
+- **Modern Frontend**: React + Vite + TypeScript + Tailwind CSS
+- **Paper Submission System**: Multi-step form with file upload
+- **Payment Integration**: Razorpay payment gateway (mock mode supported)
+- **GitHub Storage**: Papers automatically saved to repository
+- **Email Notifications**: Automated confirmation emails
+- **Responsive Design**: Mobile-first, professional UI/UX
 
 ## 📁 Project Structure
 
 ```
-backend/
-├── src/
-│   ├── controllers/       # Request handlers
-│   │   ├── payment.ts    # Payment & submission logic
-│   │   ├── papers.ts     # Papers retrieval
-│   │   └── ...
-│   ├── routes/           # API route definitions
-│   ├── services/         # Business logic
-│   │   ├── github.ts    # GitHub storage service
-│   │   └── ...
-│   ├── middlewares/      # Express middlewares
-│   ├── templates/        # Email templates
-│   └── index.ts          # Server entry point
-├── config/               # Configuration files
-├── build/                # Compiled JavaScript (generated)
-├── package.json
-└── tsconfig.json
+Conference-Website/
+├── src/                    # Frontend React components
+├── public/                 # Static assets
+├── backend/                # Node.js/Express API server
+├── Magnus_IEEE_Conference-main/  # Papers repository
+├── index.html             # Main HTML entry point
+└── package.json           # Frontend dependencies
 ```
 
-## 🔌 API Endpoints
+## 🚀 Quick Start
 
-### Payment & Submissions
+### Prerequisites
 
-**POST /payment/createOrder**
-- Creates a Razorpay payment order
-- Body: `{ amount, receipt, notes, email }`
-- Returns: `{ status, order: { id, amount, currency } }`
+- Node.js 18+ and npm
+- Git
 
-**POST /payment/complete**
-- Completes payment and saves paper
-- Body: FormData with payment details + manuscript file
-- Returns: `{ status, message, fileLink, paperId }`
+### Installation
 
-**POST /payment/verify**
-- Verifies Razorpay payment signature
-- Body: `{ order_id, payment_id, signature }`
-- Returns: `{ status, message }`
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd "Conference Website"
+   ```
 
-### Papers
+2. **Install frontend dependencies**
+   ```bash
+   npm install
+   ```
 
-**GET /papers**
-- Retrieves all submitted papers
-- Returns: `{ status, data: [...papers], message }`
+3. **Install backend dependencies**
+   ```bash
+   cd backend
+   npm install
+   ```
 
-## ⚙️ Environment Variables
+4. **Configure environment variables**
+   ```bash
+   cd backend
+   cp .env.sample .env
+   # Edit .env with your credentials
+   ```
+
+5. **Start development servers**
+
+   **Terminal 1 - Frontend:**
+   ```bash
+   npm run dev
+   ```
+
+   **Terminal 2 - Backend:**
+   ```bash
+   cd backend
+   npm start
+   ```
+
+6. **Access the application**
+   - Frontend: http://localhost:5174
+   - Backend API: http://localhost:5001
+
+## 🔧 Configuration
+
+### Backend Environment Variables
+
+Create `backend/.env` from `backend/.env.sample`:
 
 ```bash
-# Server Configuration
+# Server
 PORT=5001
 
-# Database (PostgreSQL)
+# Database (PostgreSQL - optional)
 DB_USER=postgres
 DB_HOST=localhost
 DB_NAME=magnus_db
-DB_PASS=your_password
+DB_PASS=password
 DB_PORT=5432
 
-# Razorpay Payment Gateway
-RAZORPAY_KEY_ID=rzp_test_xxxxx
-RAZORPAY_KEY_SECRET=your_secret_key
+# Razorpay
+RAZORPAY_KEY_ID=your_key_id
+RAZORPAY_KEY_SECRET=your_secret
 
-# AWS SES Email Service
+# Email (AWS SES)
 SES_ACCESS_KEY=your_access_key
 SES_SECRET_ACCESS_KEY=your_secret_key
 REGION=ap-south-1
-SES_VERIFIED_EMAIL=noreply@yourdomain.com
 
-# GitHub Paper Storage
-AUTO_COMMIT_PAPERS=true    # Auto-commit papers to git
-AUTO_PUSH_PAPERS=false     # Auto-push to remote (use with caution)
-
-# JWT Authentication (if needed)
-JWT_SECRET=your_jwt_secret
+# GitHub Auto-Commit
+AUTO_COMMIT_PAPERS=true
+AUTO_PUSH_PAPERS=false
 ```
 
-## 🔧 Services
+## 📚 Documentation
 
-### GitHub Storage Service
+- **Backend API**: See [backend/README.md](backend/README.md)
+- **Paper Storage**: Papers saved to `Magnus_IEEE_Conference-main/pdfs/`
+- **Metadata**: Tracked in `Magnus_IEEE_Conference-main/papers.json`
 
-Saves papers to the `Magnus_IEEE_Conference-main` repository:
+## 🏗️ Tech Stack
 
-```typescript
-import { savePaperToGitHub } from './services/github';
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI, Lucide Icons
+- **Payment**: Razorpay Checkout SDK
 
-const result = await savePaperToGitHub(file, {
-  title: "Paper Title",
-  authors: ["Author Name"],
-  track: "Machine Learning",
-  email: "author@email.com"
-});
-// Returns: { success, paperId, filePath }
-```
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js with TypeScript
+- **Payment**: Razorpay API
+- **Email**: AWS SES / Nodemailer
+- **File Storage**: Local filesystem + Git
+- **Database**: PostgreSQL (optional)
 
-**Features:**
-- Saves PDFs to `../Magnus_IEEE_Conference-main/pdfs/`
-- Updates `papers.json` with metadata
-- Auto-commits to git (configurable)
-- Generates unique filenames
+## 📝 API Endpoints
 
-### Payment Service
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/payment/createOrder` | Create Razorpay payment order |
+| POST | `/payment/complete` | Complete payment & save paper |
+| GET | `/papers` | Get all submitted papers |
 
-Integrates with Razorpay for payment processing:
+## 🎨 Features in Detail
 
-```typescript
-// Create order
-const order = await razorpay.orders.create({
-  amount: 500000,  // in paise (₹5000)
-  currency: "INR",
-  receipt: "rcpt_123"
-});
+### Paper Submission Flow
 
-// Verify signature
-const isValid = verifyPaymentSignature(
-  order_id,
-  payment_id,
-  signature
-);
-```
+1. User fills multi-step form (Details → Upload → Review)
+2. Clicks "Proceed to Payment"
+3. Razorpay checkout modal opens
+4. On successful payment:
+   - Paper saved to `Magnus_IEEE_Conference-main/pdfs/`
+   - Metadata added to `papers.json`
+   - Git commit created (if enabled)
+   - Confirmation email sent
 
-### Email Service
+### Mock Mode
 
-Sends confirmation emails using AWS SES:
-
-```typescript
-import { sendRegistrationEmail } from './templates/mail';
-
-await sendRegistrationEmail("John Doe", "john@example.com");
-```
-
-## 🧪 Mock Mode
-
-For development without real API keys:
-
-```bash
-# In .env
-RAZORPAY_KEY_ID=rzp_test_placeholder
-RAZORPAY_KEY_SECRET=secret_placeholder
-```
-
-The backend automatically detects placeholder values and enables mock mode:
-- ✅ Mock payment orders
-- ✅ Mock email sending (console logs)
-- ✅ Real file storage (local)
-
-## 🏗️ Development
-
-### Build TypeScript
-
-```bash
-npm run build
-```
-
-### Watch Mode
-
-```bash
-npm run dev
-# Watches for changes and auto-recompiles
-```
-
-### Code Structure
-
-- **Controllers**: Handle HTTP requests/responses
-- **Services**: Business logic (payments, storage, email)
-- **Routes**: Define API endpoints
-- **Middlewares**: Request processing (auth, validation, error handling)
+The system supports mock mode for development without real API keys:
+- **Mock Payments**: Creates test orders without Razorpay
+- **Mock Emails**: Logs emails to console
+- **Mock Storage**: Saves papers locally without external services
 
 ## 🔒 Security
 
-- ✅ Payment signature verification
-- ✅ CORS configuration
-- ✅ File upload validation
-- ✅ Secure filename sanitization
-- ✅ Environment variable protection
+- Payment signature verification
+- File upload validation
+- Secure filename sanitization
+- Environment variable protection
+- CORS configuration
 
-## 📊 Database Schema (Optional)
+## 📦 Build & Deploy
 
-If using PostgreSQL:
-
-```sql
--- Users table
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  name VARCHAR(255),
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Payments table
-CREATE TABLE payments (
-  id SERIAL PRIMARY KEY,
-  payment_id VARCHAR(255) UNIQUE NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-## 🐛 Troubleshooting
-
-**Port already in use:**
+### Build Frontend
 ```bash
-lsof -ti:5001 | xargs kill -9
-```
-
-**TypeScript compilation errors:**
-```bash
-rm -rf build node_modules
-npm install
 npm run build
 ```
 
-**Git commit fails:**
-- Check `AUTO_COMMIT_PAPERS` is set to `true`
-- Ensure git is configured: `git config user.name` and `git config user.email`
-- Verify write permissions to papers repository
-
-## 📝 Scripts
-
-```json
-{
-  "build": "rimraf build && npx tsc",
-  "start": "node build/src/index.js",
-  "dev": "concurrently \"npx tsc --watch\" \"nodemon build/src/index.js\""
-}
+### Build Backend
+```bash
+cd backend
+npm run build
 ```
+
+### Production
+- Frontend build output: `dist/`
+- Backend build output: `backend/build/`
 
 ## 🤝 Contributing
 
-1. Follow TypeScript best practices
-2. Add JSDoc comments for public APIs
-3. Test with mock mode before production
-4. Update this README for new features
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+## 📄 License
+
+[Your License Here]
+
+## 👥 Team
+
+Chennai Institute of Technology - CSE AIML Department
+
+## 🆘 Support
+
+For issues or questions:
+- Email: magnus@citchennai.net
+- Website: [Your Website]
 
 ---
 
-**Note**: This backend is designed to work with the NCAI 2026 frontend. Ensure both are running for full functionality.
+**Note**: This project uses mock services by default. Configure real API keys in `backend/.env` for production use.
